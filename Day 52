@@ -1,0 +1,148 @@
+/*Problem Statement:
+Find the Lowest Common Ancestor (LCA) of two nodes in a Binary Tree.
+
+Input Format:
+- First line contains integer N
+- Second line contains level-order traversal (-1 represents NULL)
+- Third line contains two node values
+
+Output Format:
+- Print the LCA value
+
+Example:
+Input:
+7
+1 2 3 4 5 6 7
+4 5
+
+Output:
+2*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Tree Node */
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+/* Queue Node */
+typedef struct QNode {
+    Node* data;
+    struct QNode* next;
+} QNode;
+
+/* Queue structure */
+typedef struct Queue {
+    QNode* front;
+    QNode* rear;
+} Queue;
+
+Node* createNode(int x) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = x;
+    node->left = node->right = NULL;
+    return node;
+}
+
+Queue* createQueue() {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->front = q->rear = NULL;
+    return q;
+}
+
+void enqueue(Queue* q, Node* x) {
+    QNode* node = (QNode*)malloc(sizeof(QNode));
+    node->data = x;
+    node->next = NULL;
+
+    if (q->rear == NULL) {
+        q->front = q->rear = node;
+        return;
+    }
+    q->rear->next = node;
+    q->rear = node;
+}
+
+Node* dequeue(Queue* q) {
+    if (q->front == NULL)
+        return NULL;
+
+    QNode* temp = q->front;
+    Node* val = temp->data;
+    q->front = q->front->next;
+
+    if (q->front == NULL)
+        q->rear = NULL;
+
+    free(temp);
+    return val;
+}
+
+Node* buildTree(int arr[], int n) {
+    if (n == 0 || arr[0] == -1)
+        return NULL;
+
+    Queue* q = createQueue();
+    Node* root = createNode(arr[0]);
+    enqueue(q, root);
+
+    int i = 1;
+
+    while (i < n) {
+        Node* current = dequeue(q);
+
+        if (arr[i] != -1) {
+            current->left = createNode(arr[i]);
+            enqueue(q, current->left);
+        }
+        i++;
+
+        if (i < n && arr[i] != -1) {
+            current->right = createNode(arr[i]);
+            enqueue(q, current->right);
+        }
+        i++;
+    }
+
+    return root;
+}
+
+Node* LCA(Node* root, int n1, int n2) {
+    if (root == NULL)
+        return NULL;
+
+    if (root->data == n1 || root->data == n2)
+        return root;
+
+    Node* left = LCA(root->left, n1, n2);
+    Node* right = LCA(root->right, n1, n2);
+
+    if (left && right)
+        return root;
+
+    return left ? left : right;
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    int arr[n];
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    Node* root = buildTree(arr, n);
+
+    int n1, n2;
+    scanf("%d %d", &n1, &n2);
+
+    Node* ans = LCA(root, n1, n2);
+
+    if (ans != NULL)
+        printf("%d", ans->data);
+
+    return 0;
+}
