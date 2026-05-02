@@ -1,0 +1,72 @@
+/*Problem Statement:
+Insert elements into a Binary Search Tree and print inorder traversal.
+
+Input Format:
+- First line contains integer N
+- Second line contains N space-separated integers
+
+Output Format:
+- Print inorder traversal of BST
+
+Example:
+Input:
+5
+50 30 70 20 40
+
+Output:
+20 30 40 50 70*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Tree Node */
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+Node* createNode(int x) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = x;
+    node->left = node->right = NULL;
+    return node;
+}
+
+Node* insert(Node* root, int x) {
+    if (root == NULL)
+        return createNode(x);
+
+    if (x < root->data)
+        root->left = insert(root->left, x);
+    else
+        root->right = insert(root->right, x);
+
+    return root;
+}
+
+void inorder(Node* root) {
+    if (root == NULL)
+        return;
+
+    inorder(root->left);
+    printf("%d ", root->data);
+    inorder(root->right);
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    Node* root = NULL;
+
+    for (int i = 0; i < n; i++) {
+        int x;
+        scanf("%d", &x);
+        root = insert(root, x);
+    }
+
+    inorder(root);
+
+    return 0;
+}
