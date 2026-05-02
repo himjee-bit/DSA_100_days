@@ -1,0 +1,91 @@
+/*Problem Statement:
+Construct a binary tree from given inorder and postorder traversal arrays.
+
+Input Format:
+- First line contains integer N
+- Second line contains inorder traversal
+- Third line contains postorder traversal
+
+Output Format:
+- Print preorder traversal of constructed tree
+
+Example:
+Input:
+5
+4 2 5 1 3
+4 5 2 3 1
+
+Output:
+1 2 4 5 3*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Tree Node */
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+Node* createNode(int x) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = x;
+    node->left = node->right = NULL;
+    return node;
+}
+
+int search(int arr[], int start, int end, int key) {
+    for (int i = start; i <= end; i++) {
+        if (arr[i] == key)
+            return i;
+    }
+    return -1;
+}
+
+Node* build(int inorder[], int postorder[], int start, int end, int* index) {
+    if (start > end)
+        return NULL;
+
+    Node* root = createNode(postorder[*index]);
+    (*index)--;
+
+    if (start == end)
+        return root;
+
+    int pos = search(inorder, start, end, root->data);
+
+    root->right = build(inorder, postorder, pos + 1, end, index);
+    root->left = build(inorder, postorder, start, pos - 1, index);
+
+    return root;
+}
+
+void preorder(Node* root) {
+    if (root == NULL)
+        return;
+
+    printf("%d ", root->data);
+    preorder(root->left);
+    preorder(root->right);
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    int inorderArr[n], postorder[n];
+
+    for (int i = 0; i < n; i++)
+        scanf("%d", &inorderArr[i]);
+
+    for (int i = 0; i < n; i++)
+        scanf("%d", &postorder[i]);
+
+    int index = n - 1;
+    Node* root = build(inorderArr, postorder, 0, n - 1, &index);
+
+    preorder(root);
+
+    return 0;
+}
