@@ -1,0 +1,84 @@
+/*Problem Statement:
+Search an element in a Binary Search Tree.
+
+Input Format:
+- First line contains integer N
+- Second line contains N space-separated integers
+- Third line contains the key to search
+
+Output Format:
+- Print "Found" if key exists, otherwise "Not Found"
+
+Example:
+Input:
+5
+50 30 70 20 40
+40
+
+Output:
+Found*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Tree Node */
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+Node* createNode(int x) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = x;
+    node->left = node->right = NULL;
+    return node;
+}
+
+Node* insert(Node* root, int x) {
+    if (root == NULL)
+        return createNode(x);
+
+    if (x < root->data)
+        root->left = insert(root->left, x);
+    else
+        root->right = insert(root->right, x);
+
+    return root;
+}
+
+int search(Node* root, int key) {
+    if (root == NULL)
+        return 0;
+
+    if (root->data == key)
+        return 1;
+
+    if (key < root->data)
+        return search(root->left, key);
+    else
+        return search(root->right, key);
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    Node* root = NULL;
+
+    for (int i = 0; i < n; i++) {
+        int x;
+        scanf("%d", &x);
+        root = insert(root, x);
+    }
+
+    int key;
+    scanf("%d", &key);
+
+    if (search(root, key))
+        printf("Found");
+    else
+        printf("Not Found");
+
+    return 0;
+}
