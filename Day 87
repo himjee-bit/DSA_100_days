@@ -1,0 +1,53 @@
+/*Problem Statement:
+Implement Binary Search (Iterative).
+
+Input Format:
+- First line contains integer n
+- Second line contains n space-separated sorted integers
+- Third line contains target element x
+
+Output Format:
+- Print index of x if found, otherwise -1
+
+Example:
+Input:
+5
+12 22 25 34 64
+25
+
+Output:
+2*/
+
+#include <stdio.h>
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    int arr[n];
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    int x;
+    scanf("%d", &x);
+
+    int low = 0, high = n - 1;
+    int ans = -1;
+
+    while (low <= high) {
+        int mid = (low + high) / 2;
+
+        if (arr[mid] == x) {
+            ans = mid;
+            break;
+        }
+        else if (arr[mid] < x)
+            low = mid + 1;
+        else
+            high = mid - 1;
+    }
+
+    printf("%d", ans);
+
+    return 0;
+}
