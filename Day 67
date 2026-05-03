@@ -1,0 +1,125 @@
+/*Problem Statement:
+Print topological ordering of a Directed Acyclic Graph (DAG) using DFS.
+
+Input Format:
+- First line contains n (vertices)
+- Second line contains m (edges)
+- Next m lines contain pairs (u, v)
+
+Output Format:
+- Print topological ordering
+
+Example:
+Input:
+6
+6
+5 2
+5 0
+4 0
+4 1
+2 3
+3 1
+
+Output:
+5 4 2 3 1 0*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* List Node */
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+/* Stack Node */
+typedef struct Stack {
+    int data;
+    struct Stack* next;
+} Stack;
+
+Node* createNode(int x) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = x;
+    node->next = NULL;
+    return node;
+}
+
+Stack* createStackNode(int x) {
+    Stack* node = (Stack*)malloc(sizeof(Stack));
+    node->data = x;
+    node->next = NULL;
+    return node;
+}
+
+void push(Stack** top, int x) {
+    Stack* node = createStackNode(x);
+    node->next = *top;
+    *top = node;
+}
+
+int pop(Stack** top) {
+    if (*top == NULL)
+        return -1;
+
+    Stack* temp = *top;
+    int val = temp->data;
+    *top = temp->next;
+    free(temp);
+    return val;
+}
+
+void addEdge(Node* adj[], int u, int v) {
+    Node* node = createNode(v);
+    node->next = adj[u];
+    adj[u] = node;
+}
+
+void dfs(Node* adj[], int visited[], int v, Stack** top) {
+    visited[v] = 1;
+
+    Node* temp = adj[v];
+    while (temp) {
+        if (!visited[temp->data])
+            dfs(adj, visited, temp->data, top);
+        temp = temp->next;
+    }
+
+    push(top, v);
+}
+
+void topoSort(Node* adj[], int n) {
+    int visited[n];
+    for (int i = 0; i < n; i++)
+        visited[i] = 0;
+
+    Stack* top = NULL;
+
+    for (int i = 0; i < n; i++) {
+        if (!visited[i])
+            dfs(adj, visited, i, &top);
+    }
+
+    while (top != NULL)
+        printf("%d ", pop(&top));
+}
+
+int main() {
+    int n, m;
+    scanf("%d", &n);
+    scanf("%d", &m);
+
+    Node* adj[n];
+    for (int i = 0; i < n; i++)
+        adj[i] = NULL;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        addEdge(adj, u, v);
+    }
+
+    topoSort(adj, n);
+
+    return 0;
+}
