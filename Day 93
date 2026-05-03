@@ -1,0 +1,103 @@
+/*Problem Statement:
+Sort a singly linked list using insertion sort.
+
+Input Format:
+- First line contains integer n
+- Second line contains n space-separated integers
+
+Output Format:
+- Print sorted linked list
+
+Example:
+Input:
+5
+64 34 25 12 22
+
+Output:
+12 22 25 34 64*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* List Node */
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+Node* createNode(int x) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = x;
+    node->next = NULL;
+    return node;
+}
+
+void insertEnd(Node** head, int x) {
+    Node* node = createNode(x);
+
+    if (*head == NULL) {
+        *head = node;
+        return;
+    }
+
+    Node* temp = *head;
+    while (temp->next)
+        temp = temp->next;
+
+    temp->next = node;
+}
+
+Node* sortedInsert(Node* head, Node* newNode) {
+    if (head == NULL || head->data >= newNode->data) {
+        newNode->next = head;
+        return newNode;
+    }
+
+    Node* curr = head;
+
+    while (curr->next && curr->next->data < newNode->data)
+        curr = curr->next;
+
+    newNode->next = curr->next;
+    curr->next = newNode;
+
+    return head;
+}
+
+Node* insertionSort(Node* head) {
+    Node* sorted = NULL;
+
+    while (head) {
+        Node* next = head->next;
+        head->next = NULL;
+
+        sorted = sortedInsert(sorted, head);
+
+        head = next;
+    }
+
+    return sorted;
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    Node* head = NULL;
+
+    for (int i = 0; i < n; i++) {
+        int x;
+        scanf("%d", &x);
+        insertEnd(&head, x);
+    }
+
+    head = insertionSort(head);
+
+    Node* temp = head;
+    while (temp) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+
+    return 0;
+}
