@@ -1,0 +1,75 @@
+/*Problem Statement:
+Given a sorted array of integers and a target value x, implement the Lower Bound
+and Upper Bound operations using Binary Search.
+
+Input Format:
+- First line contains integer n
+- Second line contains n space-separated sorted integers
+- Third line contains integer x
+
+Output Format:
+- Print index of lower bound and upper bound
+
+Example:
+Input:
+7
+1 2 4 4 4 5 7
+4
+
+Output:
+2 5*/
+
+#include <stdio.h>
+
+int lowerBound(int arr[], int n, int x) {
+    int low = 0, high = n - 1, ans = n;
+
+    while (low <= high) {
+        int mid = (low + high) / 2;
+
+        if (arr[mid] >= x) {
+            ans = mid;
+            high = mid - 1;
+        } else {
+            low = mid + 1;
+        }
+    }
+
+    return ans;
+}
+
+int upperBound(int arr[], int n, int x) {
+    int low = 0, high = n - 1, ans = n;
+
+    while (low <= high) {
+        int mid = (low + high) / 2;
+
+        if (arr[mid] > x) {
+            ans = mid;
+            high = mid - 1;
+        } else {
+            low = mid + 1;
+        }
+    }
+
+    return ans;
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    int arr[n];
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    int x;
+    scanf("%d", &x);
+
+    int lb = lowerBound(arr, n, x);
+    int ub = upperBound(arr, n, x);
+
+    printf("%d %d", lb, ub);
+
+    return 0;
+}
