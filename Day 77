@@ -1,0 +1,87 @@
+/*Problem Statement:
+Using BFS or DFS, check if the entire graph is connected.
+
+Input Format:
+- First line contains n (vertices) and m (edges)
+- Next m lines contain pairs (u, v)
+
+Output Format:
+- Print CONNECTED if graph is connected, otherwise NOT CONNECTED
+
+Example:
+Input:
+4 2
+1 2
+3 4
+
+Output:
+NOT CONNECTED*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* List Node */
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+Node* createNode(int x) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = x;
+    node->next = NULL;
+    return node;
+}
+
+void addEdge(Node* adj[], int u, int v) {
+    Node* node = createNode(v);
+    node->next = adj[u];
+    adj[u] = node;
+
+    node = createNode(u);
+    node->next = adj[v];
+    adj[v] = node;
+}
+
+void dfs(Node* adj[], int visited[], int v) {
+    visited[v] = 1;
+
+    Node* temp = adj[v];
+    while (temp) {
+        if (!visited[temp->data])
+            dfs(adj, visited, temp->data);
+        temp = temp->next;
+    }
+}
+
+int main() {
+    int n, m;
+    scanf("%d %d", &n, &m);
+
+    Node* adj[n + 1];
+    for (int i = 1; i <= n; i++)
+        adj[i] = NULL;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        addEdge(adj, u, v);
+    }
+
+    int visited[n + 1];
+    for (int i = 1; i <= n; i++)
+        visited[i] = 0;
+
+    dfs(adj, visited, 1);
+
+    for (int i = 1; i <= n; i++) {
+        if (!visited[i]) {
+            printf("NOT CONNECTED");
+            return 0;
+        }
+    }
+
+    printf("CONNECTED");
+
+    return 0;
+}
