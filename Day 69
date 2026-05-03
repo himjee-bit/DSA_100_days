@@ -1,0 +1,159 @@
+/*Problem Statement:
+Implement topological sorting using in-degree array and queue (Kahn's Algorithm).
+
+Input Format:
+- First line contains n (vertices)
+- Second line contains m (edges)
+- Next m lines contain pairs (u, v)
+
+Output Format:
+- Print topological ordering
+- If cycle exists, print "NO"
+
+Example:
+Input:
+6
+6
+5 2
+5 0
+4 0
+4 1
+2 3
+3 1
+
+Output:
+4 5 2 0 3 1*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* List Node */
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+/* Queue Node */
+typedef struct QNode {
+    int data;
+    struct QNode* next;
+} QNode;
+
+/* Queue structure */
+typedef struct Queue {
+    QNode* front;
+    QNode* rear;
+} Queue;
+
+Node* createNode(int x) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = x;
+    node->next = NULL;
+    return node;
+}
+
+QNode* createQNode(int x) {
+    QNode* node = (QNode*)malloc(sizeof(QNode));
+    node->data = x;
+    node->next = NULL;
+    return node;
+}
+
+Queue* createQueue() {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->front = q->rear = NULL;
+    return q;
+}
+
+void enqueue(Queue* q, int x) {
+    QNode* node = createQNode(x);
+
+    if (q->rear == NULL) {
+        q->front = q->rear = node;
+        return;
+    }
+
+    q->rear->next = node;
+    q->rear = node;
+}
+
+int dequeue(Queue* q) {
+    if (q->front == NULL)
+        return -1;
+
+    QNode* temp = q->front;
+    int val = temp->data;
+    q->front = q->front->next;
+
+    if (q->front == NULL)
+        q->rear = NULL;
+
+    free(temp);
+    return val;
+}
+
+void addEdge(Node* adj[], int u, int v) {
+    Node* node = createNode(v);
+    node->next = adj[u];
+    adj[u] = node;
+}
+
+void topoSort(Node* adj[], int n) {
+    int indegree[n];
+    for (int i = 0; i < n; i++)
+        indegree[i] = 0;
+
+    for (int i = 0; i < n; i++) {
+        Node* temp = adj[i];
+        while (temp) {
+            indegree[temp->data]++;
+            temp = temp->next;
+        }
+    }
+
+    Queue* q = createQueue();
+
+    for (int i = 0; i < n; i++) {
+        if (indegree[i] == 0)
+            enqueue(q, i);
+    }
+
+    int count = 0;
+
+    while (q->front != NULL) {
+        int curr = dequeue(q);
+        printf("%d ", curr);
+        count++;
+
+        Node* temp = adj[curr];
+        while (temp) {
+            indegree[temp->data]--;
+            if (indegree[temp->data] == 0)
+                enqueue(q, temp->data);
+            temp = temp->next;
+        }
+    }
+
+    if (count != n)
+        printf("\nNO");
+}
+
+int main() {
+    int n, m;
+    scanf("%d", &n);
+    scanf("%d", &m);
+
+    Node* adj[n];
+    for (int i = 0; i < n; i++)
+        adj[i] = NULL;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        addEdge(adj, u, v);
+    }
+
+    topoSort(adj, n);
+
+    return 0;
+}
