@@ -1,0 +1,84 @@
+/*Problem Statement:
+Given weighted undirected graph, compute total weight of Minimum Spanning Tree using Prim’s algorithm.
+
+Input Format:
+- First line contains n (vertices) and m (edges)
+- Next m lines contain (u, v, w)
+
+Output Format:
+- Print total weight of MST
+
+Example:
+Input:
+4 5
+1 2 3
+1 3 5
+2 3 1
+2 4 4
+3 4 2
+
+Output:
+6*/
+
+#include <stdio.h>
+
+#define INF 1000000000
+
+int minKey(int key[], int mstSet[], int n) {
+    int min = INF, minIndex = -1;
+
+    for (int i = 1; i <= n; i++) {
+        if (!mstSet[i] && key[i] < min) {
+            min = key[i];
+            minIndex = i;
+        }
+    }
+
+    return minIndex;
+}
+
+int main() {
+    int n, m;
+    scanf("%d %d", &n, &m);
+
+    int graph[n + 1][n + 1];
+
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= n; j++)
+            graph[i][j] = INF;
+
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        scanf("%d %d %d", &u, &v, &w);
+        graph[u][v] = w;
+        graph[v][u] = w;
+    }
+
+    int key[n + 1];
+    int mstSet[n + 1];
+
+    for (int i = 1; i <= n; i++) {
+        key[i] = INF;
+        mstSet[i] = 0;
+    }
+
+    key[1] = 0;
+
+    int totalWeight = 0;
+
+    for (int count = 1; count <= n; count++) {
+        int u = minKey(key, mstSet, n);
+        mstSet[u] = 1;
+        totalWeight += key[u];
+
+        for (int v = 1; v <= n; v++) {
+            if (graph[u][v] != INF && !mstSet[v] && graph[u][v] < key[v]) {
+                key[v] = graph[u][v];
+            }
+        }
+    }
+
+    printf("%d", totalWeight);
+
+    return 0;
+}
