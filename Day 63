@@ -1,0 +1,89 @@
+/*Problem Statement:
+Perform DFS starting from a given source vertex using recursion.
+
+Input Format:
+- First line contains n (vertices)
+- Second line contains m (edges)
+- Next m lines contain pairs (u, v)
+- Last line contains starting vertex s
+
+Output Format:
+- Print DFS traversal order
+
+Example:
+Input:
+5
+4
+0 1
+0 2
+1 3
+2 4
+0
+
+Output:
+0 2 4 1 3*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* List Node */
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+Node* createNode(int x) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = x;
+    node->next = NULL;
+    return node;
+}
+
+void addEdge(Node* adj[], int u, int v) {
+    Node* node = createNode(v);
+    node->next = adj[u];
+    adj[u] = node;
+
+    node = createNode(u);
+    node->next = adj[v];
+    adj[v] = node;
+}
+
+void dfs(Node* adj[], int visited[], int v) {
+    visited[v] = 1;
+    printf("%d ", v);
+
+    Node* temp = adj[v];
+    while (temp) {
+        if (!visited[temp->data])
+            dfs(adj, visited, temp->data);
+        temp = temp->next;
+    }
+}
+
+int main() {
+    int n, m;
+    scanf("%d", &n);
+    scanf("%d", &m);
+
+    Node* adj[n];
+    for (int i = 0; i < n; i++)
+        adj[i] = NULL;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        addEdge(adj, u, v);
+    }
+
+    int s;
+    scanf("%d", &s);
+
+    int visited[n];
+    for (int i = 0; i < n; i++)
+        visited[i] = 0;
+
+    dfs(adj, visited, s);
+
+    return 0;
+}
