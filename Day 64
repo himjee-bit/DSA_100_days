@@ -1,0 +1,150 @@
+/*Problem Statement:
+Perform BFS from a given source using queue.
+
+Input Format:
+- First line contains n (vertices)
+- Second line contains m (edges)
+- Next m lines contain pairs (u, v)
+- Last line contains source vertex s
+
+Output Format:
+- Print BFS traversal order
+
+Example:
+Input:
+5
+4
+0 1
+0 2
+1 3
+2 4
+0
+
+Output:
+0 1 2 3 4*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* List Node */
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+/* Queue Node */
+typedef struct QNode {
+    int data;
+    struct QNode* next;
+} QNode;
+
+/* Queue structure */
+typedef struct Queue {
+    QNode* front;
+    QNode* rear;
+} Queue;
+
+Node* createNode(int x) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->data = x;
+    node->next = NULL;
+    return node;
+}
+
+QNode* createQNode(int x) {
+    QNode* node = (QNode*)malloc(sizeof(QNode));
+    node->data = x;
+    node->next = NULL;
+    return node;
+}
+
+Queue* createQueue() {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->front = q->rear = NULL;
+    return q;
+}
+
+void enqueue(Queue* q, int x) {
+    QNode* node = createQNode(x);
+
+    if (q->rear == NULL) {
+        q->front = q->rear = node;
+        return;
+    }
+
+    q->rear->next = node;
+    q->rear = node;
+}
+
+int dequeue(Queue* q) {
+    if (q->front == NULL)
+        return -1;
+
+    QNode* temp = q->front;
+    int val = temp->data;
+    q->front = q->front->next;
+
+    if (q->front == NULL)
+        q->rear = NULL;
+
+    free(temp);
+    return val;
+}
+
+void addEdge(Node* adj[], int u, int v) {
+    Node* node = createNode(v);
+    node->next = adj[u];
+    adj[u] = node;
+
+    node = createNode(u);
+    node->next = adj[v];
+    adj[v] = node;
+}
+
+void bfs(Node* adj[], int n, int s) {
+    int visited[n];
+    for (int i = 0; i < n; i++)
+        visited[i] = 0;
+
+    Queue* q = createQueue();
+
+    visited[s] = 1;
+    enqueue(q, s);
+
+    while (q->front != NULL) {
+        int curr = dequeue(q);
+        printf("%d ", curr);
+
+        Node* temp = adj[curr];
+        while (temp) {
+            if (!visited[temp->data]) {
+                visited[temp->data] = 1;
+                enqueue(q, temp->data);
+            }
+            temp = temp->next;
+        }
+    }
+}
+
+int main() {
+    int n, m;
+    scanf("%d", &n);
+    scanf("%d", &m);
+
+    Node* adj[n];
+    for (int i = 0; i < n; i++)
+        adj[i] = NULL;
+
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        addEdge(adj, u, v);
+    }
+
+    int s;
+    scanf("%d", &s);
+
+    bfs(adj, n, s);
+
+    return 0;
+}
